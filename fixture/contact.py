@@ -11,6 +11,13 @@ class ContactHelper:
         # init contact creation
         wd.find_element_by_link_text("add new").click()
         # fill contact form
+        self.fill_all_fields(contact)
+        # submit contact creation
+        wd.find_element_by_name("submit").click()
+        self.app.open_main_page()
+
+    def fill_all_fields(self, contact):
+        wd = self.app.wd
         wd.find_element_by_name("firstname").clear()
         wd.find_element_by_name("firstname").send_keys(contact.firstname)
         wd.find_element_by_name("middlename").clear()
@@ -49,6 +56,20 @@ class ContactHelper:
         Select(wd.find_element_by_name("amonth")).select_by_visible_text(contact.amonth)
         wd.find_element_by_name("ayear").clear()
         wd.find_element_by_name("ayear").send_keys(contact.ayear)
-        # submit contact creation
-        wd.find_element_by_name("submit").click()
-        self.app.open_main_page()
+
+    def delete_first(self):
+        wd = self.app.wd
+        # select fist contact
+        wd.find_element_by_name("selected[]").click()
+        # submit deletion
+        wd.find_element_by_xpath('//input[@value="Delete"]').click()
+        self.app.open_home_page()
+
+    def edit_first(self, contact):
+        wd = self.app.wd
+        # edit button fist contact
+        wd.find_element_by_xpath('//*[@title="Edit"]').click()
+        # fill contact form
+        self.fill_all_fields(contact)
+        # click button Update
+        wd.find_element_by_name("update").click()
