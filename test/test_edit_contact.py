@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from model.contact import Contact
-from datahelpers.stringhelper import get_random_string
+import datahelpers.stringhelper as dh
 
 
 def test_edit_contact(app):
-    d = get_random_string(5)
+    d = dh.get_random_string(5)
+    if app.contact.count() == 0:
+        app.contact.create(dh.get_random_contact())
     app.contact.edit_first(Contact(firstname=d + "-fname", middlename="mname", lastname="lname", nickname="nickname",
                                    title="title", company="company", address="address", home="home",
                                    mobile="mobile", fax="fax", work="work", email="email", email2="email2",
