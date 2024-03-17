@@ -43,10 +43,13 @@ class ContactHelper:
         Select(wd.find_element_by_name("amonth")).select_by_visible_text(contact.amonth)
 
     def delete_first(self):
+        self.delete_by_index(0)
+
+    def delete_by_index(self, index):
         wd = self.app.wd
         self.open_home_page()
         # select fist contact
-        wd.find_element_by_name("selected[]").click()
+        wd.find_elements_by_name("selected[]")[index].click()
         # submit deletion
         wd.find_element_by_xpath('//input[@value="Delete"]').click()
         self.app.open_home_page()
@@ -58,10 +61,13 @@ class ContactHelper:
             wd.find_element_by_link_text("home").click()
 
     def edit_first(self, contact):
+        self.edit_by_index(0, contact)
+
+    def edit_by_index(self, index, contact):
         wd = self.app.wd
         self.open_home_page()
         # edit button fist contact
-        wd.find_element_by_xpath('//*[@title="Edit"]').click()
+        wd.find_elements_by_xpath('//*[@title="Edit"]')[index].click()
         # fill contact form
         self.fill_all_fields(contact)
         # click button Update
