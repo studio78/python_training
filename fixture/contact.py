@@ -1,5 +1,6 @@
 from selenium.webdriver.support.ui import Select
 from model.contact import Contact
+import re
 
 
 class ContactHelper:
@@ -57,17 +58,27 @@ class ContactHelper:
 
     def open_home_page(self):
         wd = self.app.wd
-        if not (wd.current_url.endswith("addressbook/") and len(wd.find_elements_by_xpath("//input[@value='Send e-Mail']")) > 0):
+        if not (wd.current_url.endswith("addressbook/") and
+                len(wd.find_elements_by_xpath("//input[@value='Send e-Mail']")) > 0):
             wd.find_element_by_link_text("home").click()
 
     def edit_first(self, contact):
         self.edit_by_index(0, contact)
 
-    def edit_by_index(self, index, contact):
+    def open_contact_to_edit_by_index(self, index):
         wd = self.app.wd
         self.open_home_page()
-        # edit button fist contact
+        # edit button contact by index
         wd.find_elements_by_xpath('//*[@title="Edit"]')[index].click()
+
+    def open_contact_view_by_index(self, index):
+        wd = self.app.wd
+        self.open_home_page()
+        wd.find_elements_by_xpath('//*[@title="Details"]')[index].click()
+
+    def edit_by_index(self, index, contact):
+        wd = self.app.wd
+        self.open_contact_to_edit_by_index(index)
         # fill contact form
         self.fill_all_fields(contact)
         # click button Update
@@ -89,5 +100,40 @@ class ContactHelper:
             for element in wd.find_elements_by_xpath("//tr[@name='entry']"):
                 id = element.find_element_by_name("selected[]").get_attribute("value")
                 column = element.find_elements_by_tag_name("td")
-                self.contact_cache.append(Contact(lastname=column[1].text, firstname=column[2].text, id=id))
+                all_emails = column[4].text
+                ''' 
+                в списке контактов отсутствует телефон fax, по этому в поле all_phones_from_home_page будeт 
+                телефоны: home, mobile, work
+                '''
+                all_phones = column[5].text
+                self.contact_cache.append(Contact(lastname=column[1].text, firstname=column[2].text, id=id,
+                                                  address=column[3].text, all_phones_from_home_page=all_phones,
+                                                  all_emails_from_home_page=all_emails))
         return list(self.contact_cache)
+
+    def get_contact_info_from_edit_page(self, index):
+        wd = self.app.wd
+        self.open_contact_to_edit_by_index(index)
+        firstname = wd.find_element_by_name("firstname").get_attribute("value")
+        lastname = wd.find_element_by_name("lastname").get_attribute("value")
+        id = wd.find_element_by_name("id").get_attribute("value")
+        home = wd.find_element_by_name("home").get_attribute("value")
+        mobile = wd.find_element_by_name("mobile").get_attribute("value")
+        work = wd.find_element_by_name("work").get_attribute("value")
+        fax = wd.find_element_by_name("fax").get_attribute("value")
+        address = wd.find_element_by_name("address").get_attribute("value")
+        email = wd.find_element_by_name("email").get_attribute("value")
+        email2 = wd.find_element_by_name("email2").get_attribute("value")
+        email3 = wd.find_element_by_name("email3").get_attribute("value")
+        return Contact(firstname=firstname, lastname=lastname, home=home, mobile=mobile, work=work, fax=fax, id=id,
+                       address=address, email=email, email2=email2, email3=email3)
+
+    def get_contact_from_view_page(self, inndex):
+        wd = self.app.wd
+        self.open_contact_view_by_index(inndex)
+        text = wd.find_element_by_id("content").text
+        home = re.search("H: (.*)", text).group(1)
+        work = re.search("W: (.*)", text).group(1)
+        mobile = re.search("M: (.*)", text).group(1)
+        fax = re.search("F: (.*)", text).group(1)
+        return Contact(home=home, mobile=mobile, work=work, fax=fax)
