@@ -66,6 +66,18 @@ class ContactHelper:
         self.app.open_home_page()
         self.contact_cache = None
 
+    def add_to_group(self, id, group_id):
+        wd = self.app.wd
+        self.open_home_page()
+        # select contact
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        # select group
+        Select(wd.find_element_by_name("to_group")).select_by_value(group_id)
+        # click button Add to
+        wd.find_element_by_name("add").click()
+        self.open_home_page()
+        self.contact_cache = None
+
     def open_home_page(self):
         wd = self.app.wd
         if not (wd.current_url.endswith("addressbook/") and
