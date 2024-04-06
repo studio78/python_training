@@ -25,6 +25,7 @@ testdata = [Group(name="", footer="", header="")] + [dh.get_random_group() for i
 
 file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", f)
 with open(file, "w") as out:
-    jsonpickle.set_encoder_options("json", indent=2)
+    # jsonpickle.set_encoder_options("simplejson", indent=2, ensure_ascii=False, encoding='utf8')
+    jsonpickle.set_encoder_options("simplejson", indent=2, encoding='utf8')
     out.write(jsonpickle.encode(testdata))
     # out.write(json.dumps(testdata, default=lambda x: x.__dict__, indent=2))

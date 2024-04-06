@@ -28,5 +28,6 @@ testdata = [Contact(firstname="", middlename="", lastname="", nickname="", title
 
 file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", f)
 with open(file, "w") as out:
-    jsonpickle.set_encoder_options("json", indent=2)
+    # jsonpickle.set_encoder_options("json", indent=2)
+    jsonpickle.set_encoder_options("simplejson", indent=2, encoding='utf8')
     out.write(jsonpickle.encode(testdata))
