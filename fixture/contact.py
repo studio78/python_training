@@ -165,12 +165,27 @@ class ContactHelper:
         return Contact(firstname=firstname, lastname=lastname, home=home, mobile=mobile, work=work, fax=fax, id=id,
                        address=address, email=email, email2=email2, email3=email3)
 
-    def get_contact_from_view_page(self, inndex):
+    def get_contact_from_view_page(self, index):
         wd = self.app.wd
-        self.open_contact_view_by_index(inndex)
+        self.open_contact_view_by_index(index)
         text = wd.find_element_by_id("content").text
         home = re.search("H: (.*)", text).group(1)
         work = re.search("W: (.*)", text).group(1)
         mobile = re.search("M: (.*)", text).group(1)
         fax = re.search("F: (.*)", text).group(1)
         return Contact(home=home, mobile=mobile, work=work, fax=fax)
+
+    def filter_contacts_by_group_id(self, group_id):
+        wd = self.app.wd
+        self.open_home_page()
+        # select group
+        Select(wd.find_element_by_name("group")).select_by_value(group_id)
+
+    def remove_from_group_by_id(self, id):
+        wd = self.app.wd
+        # select contact
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        # remove
+        wd.find_element_by_name('remove').click()
+        self.app.open_home_page()
+        self.contact_cache = None
