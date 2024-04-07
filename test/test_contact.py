@@ -9,7 +9,8 @@ def test_contact_from_db(app, db):
         app.contact.create(dh.get_random_contact())
     contacts_from_db = db.get_contact_list()
     contacts_from_home_page = app.contact.get_contact_list()
-    assert contacts_from_home_page == contacts_from_db_to_contacts_from_home(contacts_from_db)
+    assert (sorted(contacts_from_home_page, key=Contact.id_or_max) ==
+            sorted(contacts_from_db_to_contacts_from_home(contacts_from_db), key=Contact.id_or_max))
 
 
 def test_contact(app):

@@ -27,7 +27,8 @@ class ORMFixture:
                      lazy=True)
 
     def __init__(self, host, name, user, password):
-        self.db.bind('mysql', host=host, database=name, user=user, password=password, conv=decoders)
+        # self.db.bind('mysql', host=host, database=name, user=user, password=password, conv=decoders)
+        self.db.bind('mysql', host=host, database=name, user=user, password=password)
         self.db.generate_mapping()
         sql_debugging(True)
 
@@ -48,6 +49,10 @@ class ORMFixture:
     @db_session
     def get_contact_list(self):
         return self.convert_contacts_to_model(select(c for c in ORMFixture.ORMContact if c.deprecated is None))
+
+    @db_session
+    def get_contact_by_lastname(self, lastname):
+        return self.convert_contacts_to_model(select(c for c in ORMFixture.ORMContact if c.lastname == lastname))[0]
 
     @db_session
     def get_contacts_in_group(self, group):
